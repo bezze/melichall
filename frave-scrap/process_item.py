@@ -40,10 +40,18 @@ def process(url):
 
     name = soup.find('h1', class_='product-title').text.strip()
 
+    previous_price = soup.find('span', class_='previous-price Price__PreviousPrice-sc-1a3e119-1 bcfAaX').text.strip()
+    current_price = soup.find('p', class_='current-price').text.strip()
+
     box = soup.find('div', class_="Specifications__StyledSpecifications-i57k8a-0 bVxZEy")
     specs = get_specs_box(box)
 
-    specs['name'] = name
+    specs = {
+        "name": name,
+        "current_price": current_price,
+        "previous_price": previous_price,
+        **specs
+    }
 
     return specs
 
@@ -61,8 +69,8 @@ def main():
             except Exception as e:
                 failed.append(url)
 
-    with open('processed_products.json', 'w') as g:
-        g.write(json.dumps(all_dic))
+    with open('processed_products.json', 'w', encoding='utf8') as g:
+        json.dump(all_dic, g, ensure_ascii=False)
 
     with open('failed_urls', 'w') as h:
         for failure in failed:

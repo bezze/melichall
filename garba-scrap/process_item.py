@@ -37,6 +37,9 @@ def process(url):
 
     name = soup.h1.text
 
+    current_price = soup.find('span', id='final-price', class_='value-item').text.strip()
+    previous_price = soup.find('span', class_='value-note').find('del').text.strip()
+
     # print(name, url)
 
     gb_tech_spec_screen = soup.find('div', class_='gb-tech-spec', id='gb-tech-spec')
@@ -53,6 +56,8 @@ def process(url):
 
     structure = {
         "name": name,
+        "current_price": current_price,
+        "previous_price": previous_price,
         "screen": screen,
         "dimensions": dim,
         "connection": conn,
@@ -72,11 +77,13 @@ def main():
             try:
                 item = process(url.strip())
                 all_dic[item['name']] = item
+                print(item['name'])
             except Exception as e:
+                print(e)
                 failed.append(url)
 
-    with open('processed_products.json', 'w') as g:
-        g.write(json.dumps(all_dic))
+    with open('processed_products.json', 'w', encoding='utf-8') as g:
+        json.dump(all_dic, g, ensure_ascii=False)
 
     with open('failed_urls', 'w') as h:
         for failure in failed:
