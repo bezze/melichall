@@ -153,28 +153,33 @@ class Item:
         attrs = {k: None for k in cls.attr_list}
 
         attr_map = {
-            'current_price': ('current_price',),
-            'depth': ('Dimensiones', 'Profundidad'),
-            'depth_b': ('Dimensiones', 'Profundidad \(con base\)'),
-            'hdmi_ports': ('Conectividad', 'Entradas HDMI'),
-            'height': ('Dimensiones', 'Alto'),
-            'height_b': ('Dimensiones', 'Alto \(con base\)'),
-            'inches': ('Imagen', 'Pulgadas'),
-            'internet': ('Conectividad', 'Conexión a Internet'),
-            'model': ('Modelo y origen', 'Modelo'),
-            'name': ('name',),
-            'netflix': ('Caracter[i-í]sticas Smart', 'Netflix'),
-            'previous_price': ('previous_price',),
-            'res_type': ('Imagen', 'Tipo de resolución'),
-            'resolution': ('Imagen', 'Resolución'),
-            'screen_format': ('Imagen', 'Formato de pantalla'),
-            'screen_type': ('Imagen', 'Tipo de pantalla'),
-            'usb_ports': ('Conectividad', 'Entradas USB'),
-            'vesa': ('Dimensiones', 'Medida VESA'),
-            'weight': ('Dimensiones', 'Peso'),
-            'width': ('Dimensiones', 'Ancho'),
-            'width_b': ('Dimensiones', 'Ancho \(con base\)'),
-            'youtube': ('Caracter[i-í]sticas Smart', 'Youtube'),
+            'current_price':     ('current_price',),
+            'depth':             ('Dimensiones', 'Profundidad'),
+            'depth_b':           ('Dimensiones', 'Profundidad \(con base\)'),
+            'hdmi_ports':        ('Conectividad', 'Entradas HDMI'),
+            'height':            ('Dimensiones', 'Alto'),
+            'height_b':          ('Dimensiones', 'Alto \(con base\)'),
+            'inches':            ('Imagen', 'Pulgadas'),
+            'internet':          ('Conectividad', 'Conexión a Internet'),
+            'model':             ('Modelo y origen', 'Modelo'),
+            'name':              ('name',),
+            'netflix':           ('Caracter[i-í]sticas Smart', 'Netflix'),
+            'previous_price':    ('previous_price',),
+            'res_type':          ('Imagen', 'Tipo de resolución'),
+            'resolution':        ('Imagen', 'Resolución'),
+            'screen_format':     ('Imagen', 'Formato de pantalla'),
+            'screen_type':       ('Imagen', 'Tipo de pantalla'),
+            'usb_ports':         ('Conectividad', 'Entradas USB'),
+            'vesa':              ('Dimensiones', 'Medida VESA'),
+            'weight':            ('Dimensiones', 'Peso'),
+            'width':             ('Dimensiones', 'Ancho'),
+            'width_b':           ('Dimensiones', 'Ancho \(con base\)'),
+            'youtube':           ('Caracter[i-í]sticas Smart', 'Youtube'),
+        }
+
+        parse_map = {
+            'current_price':     lambda v: float(v.replace("$", "").strip()),
+            'previous_price':    lambda v: float(v.replace("$", "").strip())
         }
 
         def r(x, y):
@@ -186,9 +191,8 @@ class Item:
             return x.get(first_key, {})
 
         for att, path in attr_map.items():
-            # print(att, path)
-            # value = reduce(lambda x, y: x.get(y), path, frave)
             value = reduce(r, path, frave)
-            attrs[att] = value
+            parser = parse_map.get(att, lambda x: x)
+            attrs[att] = parser(value)
 
         return cls(**attrs)
