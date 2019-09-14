@@ -2,12 +2,12 @@ import json
 from translate import Item
 
 
-data_frave = open('frave-scrap/processed_products.json').read()
+data_frave = open('processed_products_frave.json').read()
 frave = json.loads(data_frave)
 frave_items = []
 frave_ = []
 
-data_garba = open('garba-scrap/processed_products.json').read()
+data_garba = open('processed_products_garba.json').read()
 garba = json.loads(data_garba)
 garba_items = []
 garba_ = []
@@ -28,11 +28,12 @@ for fitem in frave_items:
     for gitem in garba_items:
         s = fitem.similitude(gitem)
         row += [s]
-        if fitem.model in gitem.name:
-            print("model match")
-            print(s)
-            print(fitem)
-            print(gitem)
+        if fitem.model is not None and gitem.name is not None:
+            if fitem.model in gitem.name:
+                print("model match")
+                print("Simulitude:", s)
+                print(fitem)
+                print(gitem)
     sim_matrix += [row]
 
 
