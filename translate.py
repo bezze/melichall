@@ -204,6 +204,7 @@ class Item:
             'hdmi_ports':        number_stripper,
             'youtube':           yes_no_parser,
             'wifi':              yes_no_parser,
+            'netflix':           yes_no_parser,
             'resolution':        reslution_parser,
             'vesa':              reslution_parser,
         }
@@ -270,6 +271,7 @@ class Item:
             'hdmi_ports':        number_stripper,
             'youtube':           yes_no_parser,
             'wifi':              yes_no_parser,
+            'netflix':           yes_no_parser,
             'resolution':        reslution_parser,
             'vesa':              reslution_parser,
         }

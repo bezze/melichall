@@ -22,23 +22,32 @@ for name, item in garba.items():
 
 
 sim_matrix = []
+model_matches = []
 
-for fitem in frave_items:
+for i, fitem in enumerate(frave_items):
     row = []
-    for gitem in garba_items:
+    for j, gitem in enumerate(garba_items):
         s = fitem.similitude(gitem)
         row += [s]
         if fitem.model is not None and gitem.name is not None:
             if fitem.model in gitem.name:
-                print("model match")
-                print("Simulitude:", s)
-                print(fitem)
-                print(gitem)
+                print(f"MODEL MATCH: [{i}, {j}], Simulitude: {s}")
+                model_matches.append((i,j))
     sim_matrix += [row]
 
 
 header = 4*" " + (7*" ").join([f"{c:02d}  " for c in range(len(garba_items))])
+print(80*"=")
 print(header)
 for i, row in enumerate(sim_matrix):
     str_row = "["+", ".join([f"{j:.2f} {k:.2f}" for j, k in row])+"]"
     print(f"{i:02d}", str_row)
+print(80*"=")
+
+for (i,j) in model_matches:
+    f = frave_items[i]
+    g = garba_items[j]
+    print(f.similitude(g))
+    print(f)
+    print(g)
+    print(10*"-")
