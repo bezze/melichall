@@ -61,7 +61,7 @@ def main():
 
     all_dic = {}
     failed = []
-    with open('./product_urls') as f:
+    with open('./product_urls_frave') as f:
         for url in f.readlines():
             try:
                 item = process(url.strip())
@@ -69,10 +69,10 @@ def main():
             except Exception as e:
                 failed.append(url)
 
-    with open('processed_products.json', 'w', encoding='utf8') as g:
+    with open('processed_products_frave.json', 'w', encoding='utf8') as g:
         json.dump(all_dic, g, ensure_ascii=False)
 
-    with open('failed_urls', 'w') as h:
+    with open('failed_urls_frave', 'w') as h:
         for failure in failed:
             h.write(failure+'\n')
 

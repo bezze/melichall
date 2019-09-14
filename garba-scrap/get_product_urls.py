@@ -2,13 +2,8 @@ import bs4
 import requests
 
 url = 'https://www.garbarino.com'
-
 category = f'{url}/productos/televisores-y-video/4340'
 
-html_file = 'example.html'
-
-# with open(html_file, 'r') as html_doc:
-#     soup = bs4.BeautifulSoup(html_doc.read(), 'html.parser')
 
 class EndOfCatalogue(Exception):
     pass
@@ -25,7 +20,7 @@ def get_catalogue_page(url, page=1):
 
 
 def save_urls(result_urls):
-    with open('product_urls', 'w') as products:
+    with open('product_urls_garba', 'w') as products:
         for uri in result_urls:
             products.write(f'{url}{uri}\n')
 

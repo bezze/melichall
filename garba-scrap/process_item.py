@@ -4,9 +4,6 @@ import json
 
 url = 'https://www.garbarino.com/producto/smart-tv-philips-43-full-hd-43pfg581377/9ef586dbf7'
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0"
-# html_file = 'smart-tv-philips-43-full-hd-43pfg581377.html'
-# with open(html_file, 'r') as html:
-#     html_doc = html.read()
 
 
 def get_item_page(url):
@@ -72,7 +69,7 @@ def main():
 
     all_dic = {}
     failed = []
-    with open('./product_urls') as f:
+    with open('./product_urls_garba') as f:
         for url in f.readlines():
             try:
                 item = process(url.strip())
@@ -82,10 +79,10 @@ def main():
                 print(e)
                 failed.append(url)
 
-    with open('processed_products.json', 'w', encoding='utf-8') as g:
+    with open('processed_products_garba.json', 'w', encoding='utf-8') as g:
         json.dump(all_dic, g, ensure_ascii=False)
 
-    with open('failed_urls', 'w') as h:
+    with open('failed_urls_garba', 'w') as h:
         for failure in failed:
             h.write(failure+'\n')
 
