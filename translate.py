@@ -1,5 +1,7 @@
 from functools import reduce
 import re
+import string
+from decimal import Decimal
 
 # aspect
 # current_price
@@ -82,15 +84,25 @@ class Item:
     def similitude(self, other):
         """docstring for similitude"""
 
+        skip_att = ["name", "current_price", "previous_price"]
+        N = len(Item.attr_list) - len(skip_att)
+        skip_norm = 0
+
         matches = []
         for att in Item.attr_list:
+            if att in skip_att:
+                continue
             ours = getattr(self, att)
             theirs = getattr(other, att)
             if ours is not None and theirs is not None:
+                skip_norm += 1
                 if ours == theirs:
                     matches.append(ours)
 
-        return len(matches)/len(Item.attr_list)
+        pure = len(matches)/(N - skip_norm)
+        raw = len(matches)/N
+
+        return pure, raw
 
 
     def __repr__(self):
@@ -160,13 +172,13 @@ class Item:
             'height':            ('Dimensiones', 'Alto'),
             'height_b':          ('Dimensiones', 'Alto \(con base\)'),
             'inches':            ('Imagen', 'Pulgadas'),
-            'internet':          ('Conectividad', 'Conexión a Internet'),
+            'internet':          ('Conectividad', 'Conexi[o-ó]n a Internet'),
             'model':             ('Modelo y origen', 'Modelo'),
             'name':              ('name',),
             'netflix':           ('Caracter[i-í]sticas Smart', 'Netflix'),
             'previous_price':    ('previous_price',),
-            'res_type':          ('Imagen', 'Tipo de resolución'),
-            'resolution':        ('Imagen', 'Resolución'),
+            'res_type':          ('Imagen', 'Tipo de resoluci[o-ó]n'),
+            'resolution':        ('Imagen', 'Resoluci[o-ó]n'),
             'screen_format':     ('Imagen', 'Formato de pantalla'),
             'screen_type':       ('Imagen', 'Tipo de pantalla'),
             'usb_ports':         ('Conectividad', 'Entradas USB'),
@@ -178,21 +190,140 @@ class Item:
         }
 
         parse_map = {
-            'current_price':     lambda v: float(v.replace("$", "").strip()),
-            'previous_price':    lambda v: float(v.replace("$", "").strip())
+            'current_price':     number_stripper,
+            'previous_price':    number_stripper,
+            'inches':            number_stripper,
+            'height':            number_stripper,
+            'height_b':          number_stripper,
+            'depth':             number_stripper,
+            'depth_b':           number_stripper,
+            'width':             number_stripper,
+            'width_b':           number_stripper,
+            'weight':            number_stripper,
+            'usb_ports':         number_stripper,
+            'hdmi_ports':        number_stripper,
+            'youtube':           yes_no_parser,
+            'wifi':              yes_no_parser,
+            'resolution':        reslution_parser,
+            'vesa':              reslution_parser,
         }
 
         def r(x, y):
-            # print(x, y)
             p = re.compile(y, flags=re.I)
             get_key = list(filter(lambda m: m, map(lambda s: p.match(s), x.keys())))
-            keys = [i.string for i in get_key]
+            keys = [i.string for i in get_key if len(i.string) == len(i.group())]
             first_key = keys[0] if keys else None
             return x.get(first_key, {})
 
         for att, path in attr_map.items():
             value = reduce(r, path, frave)
-            parser = parse_map.get(att, lambda x: x)
-            attrs[att] = parser(value)
+            if isinstance(value, dict) and not value:
+                value = None
+            if value is not None:
+                parser = parse_map.get(att, lambda x: x)
+                attrs[att] = parser(value)
+            else:
+                attrs[att] = value
 
         return cls(**attrs)
+
+    @classmethod
+    def from_garba(cls, garba):
+        attrs = {k: None for k in cls.attr_list}
+
+        attr_map = {
+            'current_price':     ('current_price',),
+            'depth':             ('dimensions', 'Profundidad'),
+            'depth_b':           ('dimensions', 'Profundidad \(con base\)'),
+            'hdmi_ports':        ('connection', 'HDMI'),
+            'height':            ('dimensions', 'Alto'),
+            'height_b':          ('dimensions', 'Alto \(con base\)'),
+            'inches':            ('screen', 'Pulgadas'),
+            'internet':          ('connection', 'Navegaci[o-ó] Internet'),
+            'name':              ('name',),
+            'netflix':           ('extras', 'Apto Netflix'),
+            'previous_price':    ('previous_price',),
+            'res_type':          ('screen', 'Resoluci[o-ó]n de v[i-í]deo'),
+            'resolution':        ('screen', 'Resoluci[o-ó]n'),
+            'screen_format':     ('screen', 'Formato de pantalla'),
+            'screen_type':       ('screen', 'Tipo de pantalla'),
+            'usb_ports':         ('connection', 'USB'),
+            'vesa':              ('dimensions', 'Medidas VESA'),
+            'weight':            ('dimensions', 'Peso'),
+            'width':             ('dimensions', 'Ancho'),
+            'width_b':           ('dimensions', 'Ancho \(con base\)'),
+            'youtube':           ('extras', 'YouTube'),
+        }
+
+        parse_map = {
+            'current_price':     number_stripper,
+            'previous_price':    number_stripper,
+            'inches':            number_stripper,
+            'height':            number_stripper,
+            'height_b':          number_stripper,
+            'depth':             number_stripper,
+            'depth_b':           number_stripper,
+            'width':             number_stripper,
+            'width_b':           number_stripper,
+            'weight':            number_stripper,
+            'usb_ports':         number_stripper,
+            'hdmi_ports':        number_stripper,
+            'youtube':           yes_no_parser,
+            'wifi':              yes_no_parser,
+            'resolution':        reslution_parser,
+            'vesa':              reslution_parser,
+        }
+
+        def r(x, y):
+            p = re.compile(y, flags=re.I)
+            get_key = list(filter(lambda m: m, map(lambda s: p.match(s), x.keys())))
+            keys = [i.string for i in get_key if len(i.string) == len(i.group())]
+            first_key = keys[0] if keys else None
+            return x.get(first_key, {})
+
+        for att, path in attr_map.items():
+            value = reduce(r, path, garba)
+            if isinstance(value, dict) and not value:
+                value = None
+            if value is not None:
+                parser = parse_map.get(att, lambda x: x)
+                attrs[att] = parser(value)
+            else:
+                attrs[att] = value
+
+        return cls(**attrs)
+
+
+def number_stripper(s):
+    decimal_set = string.digits + ","
+    sp = "".join([c for c in s if c in decimal_set])
+    sp = sp.replace(",", ".") # setting to SI
+    try:
+        return Decimal(sp)
+    except:
+        return None
+
+
+def yes_no_parser(s):
+    """docstring for yes_no_parser"""
+    p_yes = re.compile('s[i-í]', re.I)
+    p_no = re.compile('no', re.I)
+    try:
+        if p_yes.match(s):
+            return True
+        elif p_no.match(s):
+            return False
+    except:
+        return None
+
+
+def reslution_parser(s):
+    """docstring for reslution_parser"""
+    sp = s.strip().replace(" ","")
+    p = re.compile('\d*x\d*')
+    m = p.match(sp)
+    if m:
+        return m.group()
+    return s
+
+
