@@ -25,17 +25,26 @@ def save_urls(result_urls):
             products.write(f'{url}{uri}\n')
 
 
-page = 0
-results = []
-while True:
-    page += 1
-    try:
-        print(page)
-        html_doc = get_catalogue_page(category, page=page)
-        soup = bs4.BeautifulSoup(html_doc.text, 'html.parser')
-        result_uris = [i['content'] for i in soup.find_all('meta', itemprop='url')]
-        results += result_uris
-    except EndOfCatalogue:
-        break
+def get_urls():
+    page = 0
+    results = []
+    while True:
+        page += 1
+        try:
+            print(page)
+            html_doc = get_catalogue_page(category, page=page)
+            soup = bs4.BeautifulSoup(html_doc.text, 'html.parser')
+            result_uris = [i['content'] for i in soup.find_all('meta', itemprop='url')]
+            results += result_uris
+        except EndOfCatalogue:
+            break
 
-save_urls(results)
+    save_urls(results)
+
+
+def main():
+    get_urls()
+
+
+if __name__ == '__main__':
+    main()

@@ -56,7 +56,7 @@ def process(url):
     return specs
 
 
-def main():
+def process_item_batch():
     """docstring for main"""
 
     all_dic = {}
@@ -77,6 +77,9 @@ def main():
             h.write(failure+'\n')
 
 
+def main():
+    """docstring for main"""
+    process_item_batch()
 
 if __name__ == '__main__':
     main()

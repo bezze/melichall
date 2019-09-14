@@ -64,7 +64,7 @@ def process(url):
     return structure
 
 
-def main():
+def process_item_batch():
     """docstring for main"""
 
     all_dic = {}
@@ -86,6 +86,10 @@ def main():
         for failure in failed:
             h.write(failure+'\n')
 
+
+def main():
+    """docstring for main"""
+    process_item_batch()
 
 
 if __name__ == '__main__':
