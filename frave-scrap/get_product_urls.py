@@ -42,7 +42,7 @@ def get_urls():
     save_urls(results)
 
 
-def main(self):
+def main():
     """docstring for main"""
     get_urls()
 
